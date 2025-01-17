@@ -25,18 +25,16 @@ app.config.from_object(Config)
 babel = Babel(app)
 
 
+@babel.localeselector
 def get_locale() -> str:
     """
     Gets locale from request object
     """
-    locale = request.args.get('locale')
-    print(locale)
-    if locale in app.config['LANGUAGES']:
+    locale = request.args.get('locale', '').strip()
+    if locale and locale in Config.LANGUAGES:
         return locale
-    
-    return  request.accept_languages.best_match(app.config['LANGUAGES'])
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
-babel.init_app(app, locale_selector=get_locale)
 
 @app.route('/', strict_slashes=False)
 def index() -> str:
